@@ -12,7 +12,7 @@ const TaskManagement = () => {
     documentation: "Sample documentation",
   };
 
-  // const [tasks, setTasks] = useState([defaultTask]);
+  const [tasks, setTasks] = useState([defaultTask]);
   const [products, setProducts] = useState([
     {
       name: "Product A",
