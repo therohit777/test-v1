@@ -1,0 +1,337 @@
+/* General Styles */
+
+  
+  .container {
+    max-width: 100%;
+    /* margin: 0 auto; */
+    /* padding: 20px; */
+  }
+  
+  /* Header */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #1e293b;
+    color: white;
+    padding: 15px 20px;
+    /* border-radius: 8px; */
+    margin-bottom: 20px;
+  }
+  
+  .header h1 {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin: 0;
+  }
+  
+  .deploy-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .deploy-all {
+    background-color: #22c55e;
+  }
+  
+  .deploy-partial {
+    background-color: #3b82f6;
+  }
+  
+  .deploy-button:hover {
+    filter: brightness(1.15);
+  }
+  
+  /* Action Buttons */
+  .action-buttons {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    margin-left: 30px;
+  }
+  
+  .action-buttons button {
+    background-color: #1e293b;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+  }
+  
+  .action-buttons button:hover {
+    background-color: #334155;
+  }
+  
+  /* Modal */
+  .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    overflow-y: auto;
+  }
+  
+  .modal-content {
+    background: white;
+    padding: 25px;
+    width: 100%;
+    max-width: 800px;
+    border-radius: 10px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    text-align: center;
+  }
+  
+  .modal-content h2 {
+    font-size: 1.6rem;
+    margin-bottom: 20px;
+    color: #1e293b;
+  }
+  
+  /* Form Group */
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 15px;
+  }
+  
+  .form-group label {
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #374151;
+    font-size: 0.95rem;
+  }
+  
+  .form-group input,
+  .form-group select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #e5e7eb;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-size: 0.95rem;
+    background-color: #ffffff;
+    color: #374151;
+  }
+  
+  .form-group select {
+    appearance: none;
+    cursor: pointer;
+  }
+  
+  /* Modal Actions */
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+  }
+  
+  .modal-actions button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+  }
+  
+  .cancel-button {
+    background-color: #ef4444;
+    color: white;
+  }
+  
+  .cancel-button:hover {
+    background-color: #dc2626;
+  }
+  
+  .save-button {
+    background-color: #10b981;
+    color: white;
+  }
+  
+  .save-button:hover {
+    background-color: #059669;
+  }
+  
+  /* Table */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  
+  th,
+  td {
+    padding: 12px 15px;
+    text-align: left;
+    font-size: 0.95rem;
+  }
+  
+  th {
+    background-color: #e2e8f0;
+    color: #1e293b;
+    font-weight: bold;
+    border-bottom: 2px solid #cbd5e1;
+  }
+  
+  td {
+    background-color: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+    color: #374151;
+  }
+  
+  tr:hover td {
+    background-color: #f1f5f9;
+  }
+  
+  input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+  }
+  
+  /* Remove Button */
+  .remove-button {
+    background-color: #ef4444;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+  }
+  
+  .remove-button:hover {
+    background-color: #dc2626;
+  }
+  
+  /* Responsive Design */
+  @media screen and (max-width: 768px) {
+    .header {
+      flex-direction: column;
+      text-align: center;
+    }
+  
+    .action-buttons {
+      flex-direction: column;
+      gap: 10px;
+    }
+  
+    .modal-content {
+      width: 95%;
+      padding: 20px;
+    }
+  
+    .form-group input,
+    .form-group select {
+      width: 100%;
+    }
+  
+    .modal-actions {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  
+    table {
+      font-size: 0.85rem;
+    }
+  }
+  
+  /* Actions (Close, Create, Search) */
+.actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+  
+  /* Search Box */
+  .actions input {
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    width: 100%;
+    max-width: 300px;
+    font-size: 1rem;
+    background-color: #f9f9f9;
+    transition: border-color 0.3s ease;
+  }
+  
+  .actions input:focus {
+    outline: none;
+    border-color: #3b82f6; /* Blue border on focus */
+    box-shadow: 0 0 5px rgba(59, 130, 246, 0.5);
+  }
+  
+  /* Close Button */
+  .actions .close-button {
+    background-color: #ef4444;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+  }
+  
+  .actions .close-button:hover {
+    background-color: #dc2626;
+  }
+  
+  /* Create Button */
+  .actions .create-button {
+    background-color: #22c55e;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+  }
+  
+  .actions .create-button:hover {
+    background-color: #16a34a;
+  }
+
+  .deploy-white {
+    background-color: white;
+    color: black;
+    border: 1px solid #ccc;
+  }
+  
+  .deploy-red {
+    background-color: #ef4444;
+    color: white;
+  }
+  
+  .deploy-blue {
+    background-color: #3b82f6;
+    color: white;
+  }
+  
