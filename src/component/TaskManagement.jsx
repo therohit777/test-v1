@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "./styles.css";
 
 const TaskManagement = () => {
-  const defaultTask = {
+  const defaultTask = [{
     taskName: "Default Task",
     startTime: "2024-01-01T09:00",
     endTime: "2024-01-01T17:00",
@@ -10,9 +10,8 @@ const TaskManagement = () => {
     inputProduct: ["Product A"],
     outputProduct: ["Product B"],
     documentation: "Sample documentation",
-  };
+  }];
 
-  const [tasks, setTasks] = useState([defaultTask]);
   const [products, setProducts] = useState([
     {
       name: "Product A",
@@ -231,7 +230,7 @@ const TaskManagement = () => {
                 }
               >
                 <option value="">-- Select an Input Task --</option>
-                {tasks.map((task) => (
+                {defaultTask.map((task) => (
                   <option key={task.taskName} value={task.taskName}>
                     {task.taskName}
                   </option>
@@ -250,7 +249,7 @@ const TaskManagement = () => {
                 }
               >
                 <option value="">-- Select an Output Task --</option>
-                {tasks.map((task) => (
+                {defaultTask.map((task) => (
                   <option key={task.taskName} value={task.taskName}>
                     {task.taskName}
                   </option>
@@ -314,7 +313,7 @@ const TaskManagement = () => {
                 }
               >
                 <option value="">-- Select an Input Task --</option>
-                {tasks.map((task) => (
+                {defaultTask.map((task) => (
                   <option key={task.taskName} value={task.taskName}>
                     {task.taskName}
                   </option>
@@ -333,7 +332,7 @@ const TaskManagement = () => {
                 }
               >
                 <option value="">-- Select an Output Task --</option>
-                {tasks.map((task) => (
+                {defaultTask.map((task) => (
                   <option key={task.taskName} value={task.taskName}>
                     {task.taskName}
                   </option>
