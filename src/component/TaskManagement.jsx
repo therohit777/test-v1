@@ -1,35 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import "./styles.css";
 
-const TaskManagement = () => {
-  const defaultTask = [{
-    taskName: "Default Task",
-    startTime: "2024-01-01T09:00",
-    endTime: "2024-01-01T17:00",
-    cost: 100,
-    inputProduct: ["Product A"],
-    outputProduct: ["Product B"],
-    documentation: "Sample documentation",
-  }];
 
-  const [products, setProducts] = useState([
+const TaskManagement = () => {
+  const apiBaseUrl = "http://127.0.0.1:8000"; // Update this to match your backend API URL
+  const defaultTask = [
     {
-      name: "Product A",
-      creationTime: "2024-01-01T08:00",
-      cost: 50,
-      inputTask: ["Default Task"],
-      outputTask: [],
-      deploymentStatus: false,
+      taskName: "Default Task",
+      startTime: "2024-01-01T09:00",
+      endTime: "2024-01-01T17:00",
+      cost: 100,
+      inputProduct: ["Product A"],
+      outputProduct: ["Product B"],
+      documentation: "Sample documentation",
     },
-    {
-      name: "Product B",
-      creationTime: "2024-01-01T17:00",
-      cost: 75,
-      inputTask: [],
-      outputTask: ["Default Task"],
-      deploymentStatus: false,
-    },
-  ]);
+  ];
+
+  const [products, setProducts] = useState([]);
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [showProductTable, setShowProductTable] = useState(false);
   const [showCreateProductModal, setShowCreateProductModal] = useState(false);
@@ -45,50 +33,93 @@ const TaskManagement = () => {
     deploymentStatus: false,
   });
 
-  const handleSelectProduct = (productName) => {
+  // Fetch all products from the backend
+  const fetchProducts = async () => {
+    try {
+      const response = await axios.get(`${apiBaseUrl}/all`);
+      setProducts(response.data.products);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  // Handle Create Product
+  const handleCreateProduct = async () => {
+    try {
+      const product = {
+        ...newProduct,
+        creationTime: new Date().toISOString(),
+      };
+      const response = await axios.post(`${apiBaseUrl}/create`, product);
+      setProducts([...products, response.data.product]);
+      setNewProduct({ name: "", cost: 0, inputTask: [], outputTask: [], deploymentStatus: false });
+      setShowCreateProductModal(false);
+    } catch (error) {
+      console.error("Error creating product:", error);
+    }
+  };
+
+  // Handle Edit Product
+  const handleEditProduct = async () => {
+    try {
+      const response = await axios.post(
+        `${apiBaseUrl}/edit/${currentEditProduct._id}`,
+        currentEditProduct
+      );
+      setProducts((prev) =>
+        prev.map((product) =>
+          product._id === response.data.product._id ? response.data.product : product
+        )
+      );
+      setShowEditProductModal(false);
+    } catch (error) {
+      console.error("Error editing product:", error);
+    }
+  };
+
+  // Handle Remove Product
+  const handleRemoveProduct = async (productId) => {
+    try {
+      await axios.post(`${apiBaseUrl}/delete/${productId}`);
+      setProducts(products.filter((product) => product._id !== productId));
+      setSelectedProducts(selectedProducts.filter((id) => id !== productId));
+    } catch (error) {
+      console.error("Error deleting product:", error);
+    }
+  };
+
+  // Handle Deployment
+  const handleDeploy = async () => {
+    try {
+      for (const productId of selectedProducts) {
+        await axios.post(`${apiBaseUrl}/change-deployment/${productId}`, {
+          deploymentStatus: true,
+        });
+      }
+      setProducts((prev) =>
+        prev.map((product) =>
+          selectedProducts.includes(product._id)
+            ? { ...product, deploymentStatus: true }
+            : product
+        )
+      );
+      setSelectedProducts([]); // Clear selections after deployment
+      alert(`Deployed: ${selectedProducts.join(", ")}`);
+    } catch (error) {
+      console.error("Error deploying products:", error);
+    }
+  };
+
+  const handleSelectProduct = (productId) => {
     setSelectedProducts((prev) =>
-      prev.includes(productName)
-        ? prev.filter((name) => name !== productName)
-        : [...prev, productName]
+      prev.includes(productId)
+        ? prev.filter((id) => id !== productId)
+        : [...prev, productId]
     );
-  };
-
-  const handleCreateProduct = () => {
-    const product = {
-      ...newProduct,
-      creationTime: new Date().toISOString(),
-    };
-    setProducts([...products, product]);
-    setNewProduct({ name: "", cost: 0, inputTask: [], outputTask: [], deploymentStatus: false });
-    setShowCreateProductModal(false);
-  };
-
-  const handleEditProduct = () => {
-    setProducts((prev) =>
-      prev.map((product) =>
-        product.name === currentEditProduct.name ? currentEditProduct : product
-      )
-    );
-    setShowEditProductModal(false);
-  };
-
-  const handleRemoveProduct = (productName) => {
-    setProducts(products.filter((product) => product.name !== productName));
-    setSelectedProducts(
-      selectedProducts.filter((product) => product !== productName)
-    );
-  };
-
-  const handleDeploy = () => {
-    setProducts((prev) =>
-      prev.map((product) =>
-        selectedProducts.includes(product.name)
-          ? { ...product, deploymentStatus: true }
-          : product
-      )
-    );
-    setSelectedProducts([]); // Unselect all products after deployment
-    alert(`Deployed: ${selectedProducts.join(", ")}`);
   };
 
   const filteredProducts = products.filter((product) =>
@@ -155,12 +186,12 @@ const TaskManagement = () => {
               </thead>
               <tbody>
                 {filteredProducts.map((product) => (
-                  <tr key={product.name}>
+                  <tr key={product._id}>
                     <td>
                       <input
                         type="checkbox"
-                        checked={selectedProducts.includes(product.name)}
-                        onChange={() => handleSelectProduct(product.name)}
+                        checked={selectedProducts.includes(product._id)}
+                        onChange={() => handleSelectProduct(product._id)}
                       />
                     </td>
                     <td
@@ -180,7 +211,7 @@ const TaskManagement = () => {
                         className="remove-button"
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleRemoveProduct(product.name);
+                          handleRemoveProduct(product._id);
                         }}
                       >
                         Remove
