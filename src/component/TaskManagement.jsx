@@ -1,25 +1,77 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./styles.css";
-
+import SettingIcon from "./assests/settings.png";
 
 const TaskManagement = () => {
   const apiBaseUrl = "http://127.0.0.1:8000"; // Update this to match your backend API URL
+  const [taskTableData, settaskTableData] = useState({});
   const defaultTask = [
     {
-      taskName: "Default Task",
+      id: 1,
+      taskName: "Task1",
+      startTime: "2024-01-01T09:00",
+      endTime: "2024-01-01T17:00",
+      cost: 100,
+      inputProduct: ["Product A", "Product C"],
+      outputProduct: ["Product B"],
+      documentation: "Sample documentation",
+      taskType: "output", //select bteween input or ouput type
+    },
+    {
+      id: 2,
+      taskName: "Task2",
       startTime: "2024-01-01T09:00",
       endTime: "2024-01-01T17:00",
       cost: 100,
       inputProduct: ["Product A"],
       outputProduct: ["Product B"],
       documentation: "Sample documentation",
+      taskType: "input",
     },
   ];
 
+  const [deploymentColor, setdeploymentColor] = useState("");
+
+  const onChangeTask = (e) => {
+    const task = defaultTask.find((item) => item.id === Number(e.target.value));
+
+    settaskTableData(task);
+  };
+
+  const changeDeployColor = () => {
+    const totalProductDatasets = filteredProducts.filter(
+      (product) =>
+        product.inputTask &&
+        product.inputTask.includes(taskTableData.taskName) &&
+        product.deploymentStatus === true
+    ).length;
+  
+    const deployedDatasets = filteredProducts.filter(
+      (product) =>
+        product.inputTask &&
+        product.inputTask.includes(taskTableData.taskName)
+    ).length;
+  
+    // Check for complete deployment
+    if (totalProductDatasets === deployedDatasets && deployedDatasets > 0) {
+      setdeploymentColor("white"); // All datasets are deployed
+      console.log("All products deployed (color: white)");
+    } else if (deployedDatasets > 0) {
+      setdeploymentColor("red"); // Partial deployment
+      console.log("Some products deployed (color: blue)");
+    } else {
+      setdeploymentColor(""); // No deployment
+      console.log("No products deployed (default color)");
+    }
+  };
+  
+  
   const [products, setProducts] = useState([]);
   const [selectedProducts, setSelectedProducts] = useState([]);
+  const [showTaskTable, setShowTaskTable] = useState(false);
   const [showProductTable, setShowProductTable] = useState(false);
+  const [showDeploymentTable, setShowDeploymentTable] = useState(false);
   const [showCreateProductModal, setShowCreateProductModal] = useState(false);
   const [showEditProductModal, setShowEditProductModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -56,7 +108,13 @@ const TaskManagement = () => {
       };
       const response = await axios.post(`${apiBaseUrl}/create`, product);
       setProducts([...products, response.data.product]);
-      setNewProduct({ name: "", cost: 0, inputTask: [], outputTask: [], deploymentStatus: false });
+      setNewProduct({
+        name: "",
+        cost: 0,
+        inputTask: [],
+        outputTask: [],
+        deploymentStatus: false,
+      });
       setShowCreateProductModal(false);
     } catch (error) {
       console.error("Error creating product:", error);
@@ -72,7 +130,9 @@ const TaskManagement = () => {
       );
       setProducts((prev) =>
         prev.map((product) =>
-          product._id === response.data.product._id ? response.data.product : product
+          product._id === response.data.product._id
+            ? response.data.product
+            : product
         )
       );
       setShowEditProductModal(false);
@@ -137,16 +197,110 @@ const TaskManagement = () => {
     <div className="container">
       <header className="header">
         <h1>Task Management</h1>
-        <button className={`deploy-button ${deploymentButtonClass}`} onClick={handleDeploy}>
+        <button
+          className={`deploy-button ${deploymentButtonClass}`}
+          onClick={handleDeploy}
+        >
           Deploy {selectedProducts.length === products.length ? "All" : ""} (
           {selectedProducts.length})
         </button>
       </header>
 
       <div className="action-buttons">
-        <button onClick={() => setShowProductTable(true)}>Input Task</button>
-        <button>Output Task</button>
+        <select className="selectcont1" onChange={onChangeTask} defaultValue="">
+          <option value="" disabled>
+            Select a Task
+          </option>
+          {defaultTask.map((item) => (
+            <option value={item.id} key={item.id}>
+              {item.taskName}
+            </option>
+          ))}
+        </select>
       </div>
+
+      <div className="diagramcont">
+        <div className="diagram-interfece">
+          <p
+            className="cost"
+            onClick={() => {
+              setShowTaskTable(true);
+            }}
+          >
+            {" "}
+            Cost{" "}
+          </p>
+          <div className="taskelements">
+            <div className="taskleftcont">
+              <img
+                src={SettingIcon}
+                alt="none"
+                style={{ widows: "50px", height: "50px" }}
+                className="settings"
+                onClick={() => {
+                  setShowProductTable(true);
+                }}
+              />
+              <p
+                className="deploycont"
+                onClick={() => {
+                  setShowDeploymentTable(true);
+                  changeDeployColor();
+                }}
+                style={{ background:  deploymentColor  }}
+              >
+                D
+              </p>
+              <p className="starttime">Start time</p>
+            </div>
+            <p className="taskname">{taskTableData?.taskName}</p>
+            <div className="taskleftcont">
+              <img
+                src={SettingIcon}
+                alt="none"
+                style={{ widows: "50px", height: "50px" }}
+                className="settings"
+                onClick={() => {
+                  setShowProductTable(true);
+                }}
+              />
+              <p className="deploycont">D</p>
+              <p className="starttime">End time</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {showTaskTable && (
+        <div className="modal">
+          <div className="modal-content">
+            <h2>{taskTableData.taskName}</h2>
+            <div className="taskbox">
+              <div className="data">Task Name: {taskTableData.taskName}</div>
+              <div className="data">Start Time: {taskTableData.startTime}</div>
+              <div className="data">End Time: {taskTableData.endTime}</div>
+              <div className="data">
+                Input Product: {taskTableData.inputProduct.join(", ")}
+              </div>
+              <div className="data">
+                Output Product: {taskTableData.outputProduct.join(", ")}
+              </div>
+              <div className="data">Cost: ${taskTableData.cost}</div>
+              <div className="data">
+                Documentation: {taskTableData.documentation}
+              </div>
+            </div>
+            <div className="actions">
+              <button
+                className="close-button"
+                onClick={() => setShowTaskTable(false)}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {showProductTable && (
         <div className="modal">
@@ -185,40 +339,96 @@ const TaskManagement = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredProducts.map((product) => (
-                  <tr key={product._id}>
-                    <td>
-                      <input
-                        type="checkbox"
-                        checked={selectedProducts.includes(product._id)}
-                        onChange={() => handleSelectProduct(product._id)}
-                      />
-                    </td>
-                    <td
-                      className="editable-name"
-                      onClick={() => {
-                        setCurrentEditProduct(product);
-                        setShowEditProductModal(true);
-                      }}
-                    >
-                      {product.name}
-                    </td>
-                    <td>{new Date(product.creationTime).toLocaleString()}</td>
-                    <td>${product.cost}</td>
-                    <td>{product.deploymentStatus ? "Deployed" : "Pending"}</td>
-                    <td>
-                      <button
-                        className="remove-button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleRemoveProduct(product._id);
+                {filteredProducts
+                  .filter(
+                    (product) =>
+                      product.inputTask &&
+                      product.inputTask.includes(taskTableData.taskName)
+                  )
+                  .map((product) => (
+                    <tr key={product._id}>
+                      <td>
+                        <input
+                          type="checkbox"
+                          checked={selectedProducts.includes(product._id)}
+                          onChange={() => handleSelectProduct(product._id)}
+                        />
+                      </td>
+                      <td
+                        className="editable-name"
+                        onClick={() => {
+                          setCurrentEditProduct(product);
+                          setShowEditProductModal(true);
                         }}
                       >
-                        Remove
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                        {product.name}
+                      </td>
+                      <td>{new Date(product.creationTime).toLocaleString()}</td>
+                      <td>${product.cost}</td>
+                      <td>
+                        {product.deploymentStatus ? "Deployed" : "Pending"}
+                      </td>
+                      <td>
+                        <button
+                          className="remove-button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleRemoveProduct(product._id);
+                          }}
+                        >
+                          Remove
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {showDeploymentTable && (
+        <div className="modal">
+          <div className="modal-content1">
+            <h2>Input Products</h2>
+            <div className="actions">
+              <button
+                className="close-button"
+                onClick={() =>{setShowDeploymentTable(false); setdeploymentColor("");}}
+              >
+                Close
+              </button>
+              <input
+                type="text"
+                placeholder="Search products..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Deployment Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredProducts
+                  .filter(
+                    (product) =>
+                      product.inputTask &&
+                      product.inputTask.includes(taskTableData.taskName) &&
+                      product.deploymentStatus === true
+                  )
+                  .map((product) => (
+                    <tr key={product._id}>
+                      <td className="editable-name">{product.name}</td>
+                      <td>
+                        {product.deploymentStatus ? "Deployed" : "Pending"}
+                      </td>
+                    </tr>
+                  ))}
               </tbody>
             </table>
           </div>
@@ -245,7 +455,10 @@ const TaskManagement = () => {
                 type="number"
                 value={newProduct.cost}
                 onChange={(e) =>
-                  setNewProduct({ ...newProduct, cost: parseFloat(e.target.value) })
+                  setNewProduct({
+                    ...newProduct,
+                    cost: parseFloat(e.target.value),
+                  })
                 }
               />
             </div>
